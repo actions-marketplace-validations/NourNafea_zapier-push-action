@@ -1,0 +1,42 @@
+name: 'Zapier Push'
+description: 'Pushes changes to Zapier and sets environment variable'
+inputs:
+  zapier-deployment-key:
+    description: 'Zapier deployment key'
+    required: true
+  main-id:
+    description: 'Main ID'
+    required: true
+  main-app-key:
+    description: 'Main app key'
+    required: true
+  base-url:
+    description: 'Base URL'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 18
+
+    - name: Install dependencies
+      run: npm ci
+      shell: bash
+
+    - name: Install Zapier CLI
+      run: npm install -g zapier-platform-cli
+      shell: bash
+
+    - name: Authenticate with Zapier and Push
+      run: |
+        echo "{\"deployKey\": \"${{ inputs.zapier-deployment-key }}\"}" > $HOME/.zapierrc
+        echo "{\"id\": ${{ inputs.main-id }}, \"key\": \"${{ inputs.main-app-key }}\"}" > $GITHUB_WORKSPACE/.zapierapprc
+        zapier push
+        VERSION=$(jq -r .version package.json)
+        zapier env:set $VERSION 'BASE_URL=${{ inputs.base-url }}'
+      shell: bash
