@@ -15,7 +15,7 @@ To use this action in your workflow, add the following step:
 
 ```yaml
 - name: Zapier Push
-  uses: your-github-username/zapier-push-action@v1
+  uses: NourNafea/zapier-push-action@v1
   with:
     zapier-deployment-key: ${{ secrets.ZAPIER_DEPLOYMENT_KEY }}
     main-id: ${{ secrets.MAIN_ID }}
